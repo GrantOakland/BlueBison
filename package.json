@@ -1,0 +1,34 @@
+{
+	"name": "bluebison",
+	"version": "1.0.0",
+	"scripts": {
+		"dev": "cross-env NODE_OPTIONS='--inspect' next dev",
+		"build-start": "npm run build && npm start",
+		"lint": "next lint",
+		"build": "next build",
+		"start": "next start"
+	},
+	"dependencies": {
+		"axios": "^0.26.0",
+		"cookies": "^0.8.0",
+		"formik": "^2.2.9",
+		"global-react-state": "^1.2.2",
+		"lodash": "^4.17.21",
+		"mysql2": "^2.3.3",
+		"next": "^12.1.0",
+		"react": "^17.0.2",
+		"react-component-updater": "^1.0.6",
+		"react-dom": "^17.0.2"
+	},
+	"devDependencies": {
+		"@grantgryczan/eslint-config": "^1.0.2",
+		"@types/react": "^18.0.1",
+		"@typescript-eslint/eslint-plugin": "^5.13.0",
+		"@typescript-eslint/parser": "^5.13.0",
+		"cross-env": "^7.0.3",
+		"eslint": "^8.10.0",
+		"eslint-config-next": "^12.1.0",
+		"sass": "^1.49.9",
+		"string-replace-loader": "^3.1.0"
+	}
+}

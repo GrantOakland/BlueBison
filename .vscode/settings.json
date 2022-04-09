@@ -1,0 +1,10 @@
+{
+	"files.eol": "\n",
+	"editor.insertSpaces": false,
+	"eslint.format.enable": true,
+	"editor.defaultFormatter": null,
+	"javascript.preferences.quoteStyle": "single",
+	"files.exclude": {
+		".next": true
+	}
+}
