@@ -2,13 +2,13 @@ import ButtonLink from 'components/ButtonLink';
 
 const Component = () => (
 	<>
-		<div style="text-align: center;">
+		<div>
 
 			<h2>Ticket Number:</h2>
 			<span>%TICKETNUMBER%</span>
 		</div>
 		<br />
-		<div style="float: right;">
+		<div style={{ float: 'right' }}>
 			<h3>Subject:</h3>
 			<span>SubjectPlaceholder</span>
 			<br />
@@ -19,7 +19,7 @@ const Component = () => (
 			<span>Status Placeholder</span>
 			{/* Will need to make this a dropdown */}
 		</div>
-		<div style="float: left;">
+		<div style={{ float: 'left' }}>
 
 			<h3>First Name: </h3>
 			<span>DescriptionPlaceholder</span>

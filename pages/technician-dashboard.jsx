@@ -2,7 +2,7 @@ import ButtonLink from 'components/ButtonLink';
 
 const Component = () => (
 	<>
-		<table style="width: 100%; background-color: darkturquoise;">
+		<table style={{ width: '100%', backgroundColor: 'darkturquoise' }}>
 			<tr>
 				<th>Status</th>
 				<th>Subject</th>
