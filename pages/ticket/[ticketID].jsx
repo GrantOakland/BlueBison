@@ -1,57 +1,75 @@
 import ButtonLink from 'components/ButtonLink';
+import UserLink from 'components/UserLink';
+import { dbQuery } from 'lib/db';
+import serialize from 'lib/serialize';
+import { sqlNumber } from 'lib/sql';
 
-const Component = () => (
+const Component = ({ statuses, ticket, ticketStatuses, customer, technician }) => (
 	<>
 		<div>
 
 			<h2>Ticket Number:</h2>
-			<span>%TICKETNUMBER%</span>
+			<span>{ticket.TICKET_ID}</span>
 		</div>
 		<br />
-		<div style={{ float: 'right' }}>
-			<h3>Title:</h3>
-			<span>TitlePlaceholder</span>
-			<br />
-			<h3>Brief Description:</h3>
-			<span>DescriptionPlaceholder</span>
-			<br />
-			<h3>Ticket Status:</h3>
-			<span>Status Placeholder</span>
-			{/* Will need to make this a dropdown */}
-		</div>
-		<div style={{ float: 'left' }}>
-
-			<h3>First Name: </h3>
-			<span>DescriptionPlaceholder</span>
-			<br />
-			<h3>Last Name: </h3>
-			<span>DescriptionPlaceholder</span>
-			<br />
-
-			<h3>Phone Number: </h3>
-			<span>DescriptionPlaceholder</span>
-			<br />
-
-			<h3>Email Address: </h3>
-			<span>DescriptionPlaceholder</span>
-			<br />
-
-		</div>
-		<br />
-		<br />
-		<br />
-		<br />
-		<br />
-		<br />
-
 		<div>
-			<h3>Previous comments:</h3>
-			<table>{/* Put old comments from DB in here */}</table>
+			<h3>Title:</h3>
+			<span>{ticket.TICKET_TITLE}</span>
+			<br />
+			<h3>Description:</h3>
+			<span>{ticket.TICKET_DESCRIPTION}</span>
+			<br />
+			<h3>Status:</h3>
+			<span>{statuses.find(status => status.STATUS_ID === ticketStatuses[ticketStatuses.length - 1].STATUS_ID).STATUS_NAME}</span>
+			{/* Will need to make this a dropdown */}
+			<br />
+			<h3>Reported By:</h3>
+			<span><UserLink type="customer">{customer}</UserLink></span>
+			<br />
+			<h3>Assigned To:</h3>
+			<span>
+				{technician ? (
+					<UserLink type="technician">{technician}</UserLink>
+				) : (
+					'N/A'
+				)}
+			</span>
+
+			<h3>Technician Notes:</h3>
+			<textarea
+				id="NoteContent"
+				name="NoteContent"
+				rows="10"
+				cols="100"
+				placeholder="Enter note details here..."
+				defaultValue={ticket.TICKET_NOTES}
+			/>
+			<br />
+			<form action="TechView.html">
+				<input type="submit" name="NoteContent" value="Save Technician Notes" required />
+			</form>
 		</div>
+		<br />
+		<br />
+		<br />
+		<br />
+		<br />
+		<br />
+
+		<table>
+			<tr>
+				<th>Ticket History</th>
+			</tr>
+			<tr>
+				<td>
+					{/* Pull notes from database */}
+				</td>
+			</tr>
+		</table>
 		<br />
 		<br />
 		<div />
-		<label htmlFor="CommentContent"><b>Enter in a new note:</b></label>
+		<label htmlFor="CommentContent"><b>Enter a New Comment:</b></label>
 		<br />
 		<textarea
 			id="CommentContent"
@@ -62,11 +80,43 @@ const Component = () => (
 		/>
 		<br />
 		<form action="TechView.html">
-			<input type="submit" name="CommentContent" value="Save &amp; Close" required />
+			<input type="submit" name="CommentContent" value="Post Comment" required />
 		</form>
+		<br />
 		<br />
 		<ButtonLink href="/">Go Back Home</ButtonLink>
 	</>
 );
 
 export default Component;
+
+export const getServerSideProps = async ({ query }) => {
+	const ticket = serialize((await dbQuery(`
+		SELECT *
+		FROM TICKET
+		WHERE TICKET_ID = ${sqlNumber(query.ticketID)}
+	`))[0]);
+
+	return {
+		props: {
+			statuses: await dbQuery('SELECT * FROM STATUS'),
+			ticket,
+			customer: (await dbQuery(`
+				SELECT USER_ID, USER_FNAME, USER_LNAME
+				FROM USER
+				WHERE USER_ID = ${ticket.CUSTOMER_ID}
+			`))[0],
+			technician: (await dbQuery(`
+				SELECT USER_ID, USER_FNAME, USER_LNAME
+				FROM USER
+				WHERE USER_ID = ${ticket.TECHNICIAN_ID}
+			`))[0] || null,
+			ticketStatuses: serialize(await dbQuery(`
+				SELECT STATUS_ID, TICKET_STATUS_DATE
+				FROM TICKET_STATUS
+				WHERE TICKET_ID = ${sqlNumber(query.ticketID)}
+				ORDER BY TICKET_STATUS_DATE ASC
+			`))
+		}
+	};
+};

@@ -1,6 +1,6 @@
 import ButtonLink from 'components/ButtonLink';
 import { dbQuery } from 'lib/db';
-import sqlString from 'lib/sqlString';
+import { sqlString } from 'lib/sql';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
