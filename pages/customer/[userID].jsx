@@ -1,8 +1,10 @@
 import ButtonLink from 'components/ButtonLink';
 import { dbQuery } from 'lib/db';
 import { sqlNumber } from 'lib/sql';
+import withErrorPage from 'lib/withErrorPage';
+import withStatusCode from 'lib/withStatusCode';
 
-const Component = ({ user }) => (
+const Component = withErrorPage(({ user }) => (
 	<>
 		<table>
 			<tr>
@@ -25,18 +27,26 @@ const Component = ({ user }) => (
 		<br />
 		<ButtonLink href="/">Go Back Home</ButtonLink>
 	</>
-);
+));
 
 export default Component;
 
-export const getServerSideProps = async ({ query }) => ({
-	props: {
-		user: (await dbQuery(`
-			SELECT U.USER_ID, USER_FNAME, USER_LNAME
-			FROM USER AS U
-			INNER JOIN CUSTOMER AS C
-			ON U.USER_ID = C.USER_ID
-			WHERE U.USER_ID = ${sqlNumber(query.userID)}
-		`))[0]
+export const getServerSideProps = withStatusCode(async ({ query }) => {
+	const [user] = await dbQuery(`
+		SELECT U.USER_ID, USER_FNAME, USER_LNAME
+		FROM USER AS U
+		INNER JOIN CUSTOMER AS C
+		ON U.USER_ID = C.USER_ID
+		WHERE U.USER_ID = ${sqlNumber(query.userID)}
+	`);
+
+	if (!user) {
+		return {
+			props: { statusCode: 404 }
+		};
 	}
+
+	return {
+		props: { user }
+	};
 });

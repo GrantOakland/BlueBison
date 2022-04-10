@@ -1,44 +1,72 @@
 import ButtonLink from 'components/ButtonLink';
 import api from 'lib/api';
 import useFunction from 'lib/useFunction';
-import Router from 'next/router';
+import { useUser } from 'lib/UserContext';
 
-const Component = () => (
-	<>
-		<h1>Blue Bison Ticketing System.</h1>
-		<h2>Hello %USER_FNAME%</h2>
-		{/* SQL cmd to pull logged in users fname from USER table */}
-		<button
-			onClick={
-				useFunction(() => {
-					api.delete('/login').then(() => {
-						Router.push('/');
-					});
-				})
-			}
-		>
-			Log out
-		</button>
-		<br />
-		<table style={{ width: '100%' }}>
-			<tr>
-				<th>Submit a new ticket</th>
-				<th>See your ticket history</th>
-			</tr>
-			<tr>
-				{/* For this section, instead of redirecting to a new page. Let's see if we can display the results for view all closed tickets and see your ticket history here. */}
-				<td>
-					<ButtonLink href="/new-ticket">New Ticket!</ButtonLink>
-				</td>
-				<td>
-					{/* Go to search page with a "created by you" filter */}
-					<ButtonLink href={`/?user=${'user.USER_ID'}`}>See your history.</ButtonLink>
-				</td>
-			</tr>
-		</table>
-		<br />
-		<ButtonLink href="/">Go Back Home</ButtonLink>
-	</>
-);
+const Component = () => {
+	const me = useUser();
+
+	const logOut = useFunction(() => {
+		api.delete('/login').then(() => {
+			location.href = '/';
+		});
+	});
+
+	return (
+		me ? (
+			<>
+				<h1>Blue Bison Ticketing System.</h1>
+				<h2>Hello {me.USER_FNAME}</h2>
+				{/* SQL cmd to pull logged in users fname from USER table */}
+				<button onClick={logOut}>
+					Log out
+				</button>
+				<br />
+				<br />
+				<table style={{ width: '100%' }}>
+					<tr>
+						<th>Your profile</th>
+						{me.USER_IS_TECHNICIAN ? (
+							<th>Your assigned tickets</th>
+						) : (
+							<>
+								<th>Submit a new ticket</th>
+								<th>Your ticket history</th>
+							</>
+						)}
+					</tr>
+					<tr>
+						<td>
+							<ButtonLink href={`/${me.USER_IS_TECHNICIAN ? 'technician' : 'customer'}/${me.USER_ID}`}>Visit your profile.</ButtonLink>
+						</td>
+						{me.USER_IS_TECHNICIAN ? (
+							<td>
+								<ButtonLink href={`/?technician=${me.USER_ID}`}>See your assigned tickets.</ButtonLink>
+							</td>
+						) : (
+							<>
+								<td>
+									<ButtonLink href="/new-ticket">New Ticket!</ButtonLink>
+								</td>
+								<td>
+									<ButtonLink href={`/?user=${me.USER_ID}`}>See your ticket history.</ButtonLink>
+								</td>
+							</>
+						)}
+					</tr>
+				</table>
+				<br />
+				<ButtonLink href="/">Go Back Home</ButtonLink>
+			</>
+		) : (
+			<>
+				You are not signed in.
+				<br />
+				<br />
+				<ButtonLink href="/">Go Back Home</ButtonLink>
+			</>
+		)
+	);
+};
 
 export default Component;

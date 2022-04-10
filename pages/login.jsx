@@ -2,7 +2,6 @@ import ButtonLink from 'components/ButtonLink';
 import { Field, Form, Formik } from 'formik';
 import api from 'lib/api';
 import useFunction from 'lib/useFunction';
-import Router from 'next/router';
 
 const Component = () => (
 	<>
@@ -14,7 +13,7 @@ const Component = () => (
 			onSubmit={
 				useFunction(values => {
 					api.post('/login', values).then(() => {
-						Router.push('/dashboard');
+						location.href = '/dashboard';
 					});
 				})
 			}
