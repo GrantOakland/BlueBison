@@ -5,7 +5,7 @@ const Component = () => (
 		<table style={{ width: '100%', backgroundColor: 'darkturquoise' }}>
 			<tr>
 				<th>Status</th>
-				<th>Subject</th>
+				<th>Title</th>
 				<th>Brief Description</th>
 				<th>Assign Myself</th>
 				<th>Go To Ticket</th>

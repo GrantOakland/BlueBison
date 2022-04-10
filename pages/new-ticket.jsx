@@ -9,7 +9,7 @@ const Component = () => (
 			<p>Please fill in this form to create a new ticket.</p>
 			<hr />
 
-			<label htmlFor="TICKET_TITLE"><b>Subject of your issue:</b></label>
+			<label htmlFor="TICKET_TITLE"><b>Title of your issue:</b></label>
 			<input type="text" placeholder="Enter Ticket Title" name="TICKET_TITLE" required />
 			<br />
 			<label htmlFor="TICKET_DESCRIPTION"><b>Description of your issue:</b></label>

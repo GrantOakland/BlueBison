@@ -9,8 +9,8 @@ const Component = () => (
 		</div>
 		<br />
 		<div style={{ float: 'right' }}>
-			<h3>Subject:</h3>
-			<span>SubjectPlaceholder</span>
+			<h3>Title:</h3>
+			<span>TitlePlaceholder</span>
 			<br />
 			<h3>Brief Description:</h3>
 			<span>DescriptionPlaceholder</span>
