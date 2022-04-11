@@ -10,6 +10,8 @@ const TicketComment = ({ children: comment }) => {
 
 	const [content, setContent] = useState(comment.COMMENT_CONTENT);
 
+	const [deleted, setDeleted] = useState(false);
+
 	const editComment = useFunction(async () => {
 		const newContent = prompt('Enter the new comment content:', content);
 
@@ -20,9 +22,15 @@ const TicketComment = ({ children: comment }) => {
 		}
 	});
 
+	const deleteComment = useFunction(async () => {
+		if (confirm(`Are you sure you want to delete the following comment by ${comment.USER_FNAME} ${comment.USER_LNAME}?\n\n${comment.COMMENT_CONTENT}`)) {
+			await api.delete(`/tickets/${comment.TICKET_ID}/comments/${comment.COMMENT_ID}`);
 
+			setDeleted(true);
+		}
+	});
 
-	return (
+	return deleted ? null : (
 		<tr>
 			<td>
 				<UserLink>
@@ -34,7 +42,7 @@ const TicketComment = ({ children: comment }) => {
 					}}
 				</UserLink>
 				{` posted a comment at ${formatSQLDatetime(comment.COMMENT_DATE)}`}
-				<p>
+				<p className="comment-content">
 					{content}
 				</p>
 				{comment.USER_ID === me.USER_ID && (
@@ -42,7 +50,11 @@ const TicketComment = ({ children: comment }) => {
 						Edit
 					</button>
 				)}
-				<button type="button">Delete</button>
+				{me.USER_IS_TECHNICIAN === 1 && (
+					<button type="button" onClick={deleteComment}>
+						Delete
+					</button>
+				)}
 			</td>
 		</tr>
 	);
