@@ -182,8 +182,10 @@ const Component = ({ statuses, ticket, ticketStatuses: initialTicketStatuses, cu
 					content: ''
 				}}
 				onSubmit={
-					useFunction(async values => {
+					useFunction(async (values, { setFieldValue }) => {
 						const { data: comment } = await api.post(`/tickets/${ticket.TICKET_ID}/comments`, values);
+
+						setFieldValue('content', '');
 
 						setComments([
 							...comments,
