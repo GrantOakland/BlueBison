@@ -1,10 +1,9 @@
 import './styles.scss';
-import Cookies from 'cookies'; // @server-only
 import App from 'next/app'; // @server-only
 import Head from 'next/head';
 import React from 'react';
-import { dbQuery } from 'lib/db'; // @server-only
 import UserContext, { useUserInApp } from 'lib/UserContext';
+import getUserFromCookies from 'lib/getUserFromCookies'; // @server-only
 
 const MyApp = ({
 	Component,
@@ -37,21 +36,11 @@ MyApp.getInitialProps = async appContext => {
 
 	req.initialProps = appProps.pageProps.initialProps;
 
-	const cookies = new Cookies(req, res);
-	const userID = cookies.get('user');
+	const user = await getUserFromCookies(req, res);
+	if (user) {
+		req.user = user;
 
-	if (userID) {
-		const [user] = await dbQuery(`
-			SELECT *
-			FROM USER
-			WHERE USER_ID = ${userID}
-		`);
-
-		if (user) {
-			req.user = user;
-
-			appProps.pageProps.initialProps.user = user;
-		}
+		appProps.pageProps.initialProps.user = user;
 	}
 
 	return appProps;
