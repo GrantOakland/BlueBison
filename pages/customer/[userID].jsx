@@ -10,13 +10,29 @@ const Component = withErrorPage(({ user }) => (
 			<tr>
 				<th>First Name</th>
 				<th>Last Name</th>
-				<th>Email Address</th>
+				{user.USER_EMAIL && (
+					<th>Email Address</th>
+				)}
+				{user.CUSTOMER_PHONE && (
+					<th>Phone</th>
+				)}
+				{user.CUSTOMER_TIME_ZONE && (
+					<th>Time Zone</th>
+				)}
 				<th>User ID</th>
 			</tr>
 			<tr>
 				<td>{user.USER_FNAME}</td>
 				<td>{user.USER_LNAME}</td>
-				<td>{user.USER_EMAIL || 'N/A'}</td>
+				{user.USER_EMAIL && (
+					<td>{user.USER_EMAIL}</td>
+				)}
+				{user.CUSTOMER_PHONE && (
+					<td>{user.CUSTOMER_PHONE}</td>
+				)}
+				{user.CUSTOMER_TIME_ZONE && (
+					<td>{user.CUSTOMER_TIME_ZONE}</td>
+				)}
 				<td>{user.USER_ID}</td>
 			</tr>
 		</table>
@@ -31,9 +47,9 @@ const Component = withErrorPage(({ user }) => (
 
 export default Component;
 
-export const getServerSideProps = withStatusCode(async ({ query }) => {
+export const getServerSideProps = withStatusCode(async ({ req, query }) => {
 	const [user] = await dbQuery(`
-		SELECT U.USER_ID, USER_FNAME, USER_LNAME
+		SELECT U.USER_ID, USER_FNAME, USER_LNAME${req.user.USER_ID === +query.userID || req.user.USER_IS_TECHNICIAN ? ', USER_EMAIL, CUSTOMER_PHONE, CUSTOMER_TIME_ZONE' : ''}
 		FROM USER AS U
 		INNER JOIN CUSTOMER AS C
 		ON U.USER_ID = C.USER_ID
