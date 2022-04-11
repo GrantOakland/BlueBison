@@ -73,7 +73,7 @@ const Component = ({ statuses, ticket, ticketStatuses: initialTicketStatuses, cu
 				<br />
 				<h3>Status:</h3>
 				<span>
-					{me.USER_IS_TECHNICIAN ? (
+					{me?.USER_IS_TECHNICIAN ? (
 						<select
 							value={status}
 							onChange={changeStatus}
@@ -100,7 +100,7 @@ const Component = ({ statuses, ticket, ticketStatuses: initialTicketStatuses, cu
 						'N/A'
 					)}
 				</span>
-				{me.USER_IS_TECHNICIAN === 1 && (
+				{me?.USER_IS_TECHNICIAN === 1 && (
 					<>
 						{' '}
 						<button type="button" onClick={changeAssignedTechnician}>Change Assigned Technician</button>
@@ -219,7 +219,7 @@ export default Component;
 
 export const getServerSideProps = async ({ req, query }) => {
 	const ticket = serialize((await dbQuery(`
-		SELECT TICKET_ID, TICKET_TITLE, TICKET_DESCRIPTION, TICKET_LEVEL, CUSTOMER_ID, TECHNICIAN_ID${req.user.USER_IS_TECHNICIAN ? ', TICKET_NOTES' : ''}
+		SELECT TICKET_ID, TICKET_TITLE, TICKET_DESCRIPTION, TICKET_LEVEL, CUSTOMER_ID, TECHNICIAN_ID${req.user?.USER_IS_TECHNICIAN ? ', TICKET_NOTES' : ''}
 		FROM TICKET
 		WHERE TICKET_ID = ${sqlNumber(query.ticketID)}
 	`))[0]);

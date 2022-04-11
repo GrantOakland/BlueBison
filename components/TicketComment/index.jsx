@@ -48,12 +48,12 @@ const TicketComment = ({ children: comment }) => {
 				<p className="comment-content">
 					{content}
 				</p>
-				{comment.USER_ID === me.USER_ID && (
+				{comment.USER_ID === me?.USER_ID && (
 					<button type="button" onClick={editComment}>
 						Edit
 					</button>
 				)}
-				{me.USER_IS_TECHNICIAN === 1 && (
+				{me?.USER_IS_TECHNICIAN === 1 && (
 					<button type="button" onClick={deleteComment}>
 						Delete
 					</button>
