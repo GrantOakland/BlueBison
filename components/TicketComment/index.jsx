@@ -1,4 +1,5 @@
-import UserLink from './UserLink';
+import './styles.module.scss';
+import UserLink from '../UserLink';
 import { formatSQLDatetime } from 'lib/sql';
 import { useState } from 'react';
 import useFunction from 'lib/useFunction';
@@ -29,6 +30,8 @@ const TicketComment = ({ children: comment }) => {
 			setDeleted(true);
 		}
 	});
+
+	console.log(comment.TICKET_ID, comment);
 
 	return deleted ? null : (
 		<tr>

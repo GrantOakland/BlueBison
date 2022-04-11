@@ -38,6 +38,7 @@ export default async function handler(req, res) {
 
 		res.status(201).send({
 			COMMENT_ID: commentID,
+			TICKET_ID: sqlNumber(req.query.ticketID),
 			USER_ID: me.USER_ID,
 			USER_FNAME: me.USER_FNAME,
 			USER_LNAME: me.USER_LNAME,
