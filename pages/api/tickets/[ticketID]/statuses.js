@@ -34,15 +34,22 @@ export default async function handler(req, res) {
 			return;
 		}
 
+		const ticketStatusID = await newID('TICKET_STATUS');
+		const now = Date.now();
+
 		await dbQuery(`
 			INSERT INTO TICKET_STATUS VALUES (
-				${await newID('TICKET_STATUS')},
+				${ticketStatusID},
 				${sqlNumber(req.query.ticketID)},
 				${sqlNumber(req.body.statusID)},
-				${sqlDatetime(Date.now())}
+				${sqlDatetime(now)}
 			)
 		`);
 
-		res.status(201).end();
+		res.status(201).send({
+			TICKET_STATUS_ID: ticketStatusID,
+			STATUS_ID: sqlNumber(req.body.statusID),
+			TICKET_STATUS_DATE: now
+		});
 	}
 }

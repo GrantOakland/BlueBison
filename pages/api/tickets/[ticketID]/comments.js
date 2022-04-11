@@ -23,11 +23,12 @@ export default async function handler(req, res) {
 			return;
 		}
 
+		const commentID = await newID('COMMENT');
 		const now = Date.now();
 
 		await dbQuery(`
 			INSERT INTO COMMENT VALUES (
-				${await newID('COMMENT')},
+				${commentID},
 				${me.USER_ID},
 				${sqlNumber(req.query.ticketID)},
 				${sqlDatetime(now)},
@@ -36,7 +37,7 @@ export default async function handler(req, res) {
 		`);
 
 		res.status(201).send({
-			COMMENT_ID: req.body.content,
+			COMMENT_ID: commentID,
 			USER_ID: me.USER_ID,
 			USER_FNAME: me.USER_FNAME,
 			USER_LNAME: me.USER_LNAME,

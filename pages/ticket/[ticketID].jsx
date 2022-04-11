@@ -19,12 +19,17 @@ const Component = ({ statuses, ticket, ticketStatuses: initialTicketStatuses, cu
 
 	const [status, setStatus] = useState(ticketStatuses[ticketStatuses.length - 1].STATUS_ID);
 
-	const changeStatus = useFunction(event => {
+	const changeStatus = useFunction(async event => {
 		setStatus(event.target.value);
 
-		api.post(`/tickets/${ticket.TICKET_ID}/statuses`, {
+		const { data: ticketStatus } = await api.post(`/tickets/${ticket.TICKET_ID}/statuses`, {
 			statusID: event.target.value
 		});
+
+		setTicketStatuses([
+			...ticketStatuses,
+			ticketStatus
+		]);
 	});
 
 	const [ticketLevel, setTicketLevel] = useState(ticket.TICKET_LEVEL);
