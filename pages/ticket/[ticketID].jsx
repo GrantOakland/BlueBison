@@ -1,15 +1,16 @@
 import ButtonLink from 'components/ButtonLink';
+import TicketComment from 'components/TicketComment';
 import UserLink from 'components/UserLink';
 import { Field, Form, Formik } from 'formik';
 import api from 'lib/api';
 import { dbQuery } from 'lib/db';
 import serialize from 'lib/serialize';
-import { sqlNumber } from 'lib/sql';
+import { formatSQLDatetime, sqlNumber } from 'lib/sql';
 import useFunction from 'lib/useFunction';
 import { useUser } from 'lib/UserContext';
 import { useState } from 'react';
 
-const Component = ({ statuses, ticket, ticketStatuses, customer, technician: initialTechnician }) => {
+const Component = ({ statuses, ticket, ticketStatuses, customer, technician: initialTechnician, comments }) => {
 	const [technician, setTechnician] = useState(initialTechnician);
 
 	const me = useUser();
@@ -146,11 +147,24 @@ const Component = ({ statuses, ticket, ticketStatuses, customer, technician: ini
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
-						<td>
-							{/* Pull notes from database */}
-						</td>
-					</tr>
+					{[...comments, ...ticketStatuses].sort((a, b) => {
+						const aDate = a.COMMENT_DATE ?? a.TICKET_STATUS_DATE;
+						const bDate = b.COMMENT_DATE ?? b.TICKET_STATUS_DATE;
+
+						return aDate - bDate;
+					}).map(commentOrTicketStatus => (
+						commentOrTicketStatus.COMMENT_ID ? (
+							<TicketComment key={`comment-${commentOrTicketStatus.COMMENT_ID}`}>
+								{commentOrTicketStatus}
+							</TicketComment>
+						) : (
+							<tr key={`ticket-status-${commentOrTicketStatus.TICKET_STATUS_ID}`}>
+								<td>
+									{`Ticket status was set to ${statuses.find(status => status.STATUS_ID === commentOrTicketStatus.STATUS_ID).STATUS_NAME} at ${formatSQLDatetime(commentOrTicketStatus.TICKET_STATUS_DATE)}`}
+								</td>
+							</tr>
+						)
+					))}
 				</tbody>
 			</table>
 			<br />
@@ -190,20 +204,26 @@ export const getServerSideProps = async ({ req, query }) => {
 			statuses: await dbQuery('SELECT * FROM STATUS'),
 			ticket,
 			customer: (await dbQuery(`
-				SELECT USER_ID, USER_FNAME, USER_LNAME
+				SELECT USER_ID, USER_FNAME, USER_LNAME, USER_IS_TECHNICIAN
 				FROM USER
 				WHERE USER_ID = ${ticket.CUSTOMER_ID}
 			`))[0],
 			technician: (await dbQuery(`
-				SELECT USER_ID, USER_FNAME, USER_LNAME
+				SELECT USER_ID, USER_FNAME, USER_LNAME, USER_IS_TECHNICIAN
 				FROM USER
 				WHERE USER_ID = ${ticket.TECHNICIAN_ID}
 			`))[0] || null,
 			ticketStatuses: serialize(await dbQuery(`
-				SELECT STATUS_ID, TICKET_STATUS_DATE
+				SELECT TICKET_STATUS_ID, STATUS_ID, TICKET_STATUS_DATE
 				FROM TICKET_STATUS
 				WHERE TICKET_ID = ${sqlNumber(query.ticketID)}
-				ORDER BY TICKET_STATUS_DATE ASC
+			`)),
+			comments: serialize(await dbQuery(`
+				SELECT COMMENT_ID, USER.USER_ID, USER_FNAME, USER_LNAME, USER_IS_TECHNICIAN, COMMENT_DATE, COMMENT_CONTENT
+				FROM COMMENT
+				INNER JOIN USER
+				ON COMMENT.USER_ID = USER.USER_ID
+				WHERE TICKET_ID = ${sqlNumber(query.ticketID)}
 			`))
 		}
 	};
