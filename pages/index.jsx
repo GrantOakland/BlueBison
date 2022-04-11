@@ -1,11 +1,13 @@
 import ButtonLink from 'components/ButtonLink';
 import { dbQuery } from 'lib/db';
 import { sqlString } from 'lib/sql';
+import { useUser } from 'lib/UserContext';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 const Component = ({ statuses, tickets }) => {
 	const router = useRouter();
+	const me = useUser();
 
 	return (
 		<>
@@ -14,7 +16,11 @@ const Component = ({ statuses, tickets }) => {
 			</h1>
 
 			<h3>
-				<ButtonLink href="/login">Log In</ButtonLink>
+				{me ? (
+					<ButtonLink href="/dashboard">Your Dashboard</ButtonLink>
+				) : (
+					<ButtonLink href="/login">Log In</ButtonLink>
+				)}
 			</h3>
 
 			<br />
