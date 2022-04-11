@@ -9,7 +9,9 @@ import useFunction from 'lib/useFunction';
 import { useUser } from 'lib/UserContext';
 import { useState } from 'react';
 
-const Component = ({ statuses, ticket, ticketStatuses, customer, technician }) => {
+const Component = ({ statuses, ticket, ticketStatuses, customer, technician: initialTechnician }) => {
+	const [technician, setTechnician] = useState(initialTechnician);
+
 	const me = useUser();
 
 	const [status, setStatus] = useState(ticketStatuses[ticketStatuses.length - 1].STATUS_ID);
@@ -22,9 +24,26 @@ const Component = ({ statuses, ticket, ticketStatuses, customer, technician }) =
 		});
 	});
 
+	const [ticketLevel, setTicketLevel] = useState(ticket.TICKET_LEVEL);
+
+	const changeTicketLevel = useFunction(event => {
+		setTicketLevel(event.target.value);
+
+		api.put(`/tickets/${ticket.TICKET_ID}/level`, event.target.value);
+	});
+
 	const submitNotes = useFunction(values => {
-		console.log(ticket);
 		api.put(`/tickets/${ticket.TICKET_ID}/notes`, values.notes);
+	});
+
+	const changeAssignedTechnician = useFunction(async () => {
+		const technicianID = prompt('Enter a technician ID to assign this ticket to.\n\nDefaults to yourself.', me.USER_ID);
+
+		if (technicianID) {
+			const { data: newTechnician } = await api.put(`/tickets/${ticket.TICKET_ID}/technician`, technicianID);
+
+			setTechnician(newTechnician);
+		}
 	});
 
 	return (
@@ -72,28 +91,45 @@ const Component = ({ statuses, ticket, ticketStatuses, customer, technician }) =
 						'N/A'
 					)}
 				</span>
-
 				{me.USER_IS_TECHNICIAN === 1 && (
-					<Formik
-						initialValues={{
-							notes: ticket.TICKET_NOTES
-						}}
-						onSubmit={submitNotes}
-					>
-						<Form>
-							<h3><label htmlFor="notes">Technician Notes:</label></h3>
-							<Field
-								as="textarea"
-								id="notes"
-								name="notes"
-								rows="10"
-								cols="100"
-								placeholder="Enter note details here..."
+					<>
+						{' '}
+						<button type="button" onClick={changeAssignedTechnician}>Change Assigned Technician</button>
+
+						<br />
+						<h3>Ticket Level:</h3>
+						<span>
+							<input
+								type="number"
+								min="1"
+								max="99"
+								value={ticketLevel}
+								onChange={changeTicketLevel}
 							/>
-							<br />
-							<input type="submit" value="Save Technician Notes" />
-						</Form>
-					</Formik>
+						</span>
+						<br />
+
+						<Formik
+							initialValues={{
+								notes: ticket.TICKET_NOTES
+							}}
+							onSubmit={submitNotes}
+						>
+							<Form>
+								<h3><label htmlFor="notes">Technician Notes:</label></h3>
+								<Field
+									as="textarea"
+									id="notes"
+									name="notes"
+									rows="10"
+									cols="100"
+									placeholder="Enter note details here..."
+								/>
+								<br />
+								<input type="submit" value="Save Technician Notes" />
+							</Form>
+						</Formik>
+					</>
 				)}
 			</div>
 			<br />
@@ -144,7 +180,7 @@ export default Component;
 
 export const getServerSideProps = async ({ req, query }) => {
 	const ticket = serialize((await dbQuery(`
-		SELECT TICKET_ID, TICKET_TITLE, TICKET_DESCRIPTION, CUSTOMER_ID, TECHNICIAN_ID${req.user.USER_IS_TECHNICIAN ? ', TICKET_NOTES' : ''}
+		SELECT TICKET_ID, TICKET_TITLE, TICKET_DESCRIPTION, TICKET_LEVEL, CUSTOMER_ID, TECHNICIAN_ID${req.user.USER_IS_TECHNICIAN ? ', TICKET_NOTES' : ''}
 		FROM TICKET
 		WHERE TICKET_ID = ${sqlNumber(query.ticketID)}
 	`))[0]);

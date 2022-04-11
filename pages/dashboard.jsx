@@ -18,7 +18,7 @@ const Component = () => {
 				<h1>Blue Bison Ticketing System.</h1>
 				<h2>Hello {me.USER_FNAME}</h2>
 				{/* SQL cmd to pull logged in users fname from USER table */}
-				<button onClick={logOut}>
+				<button type="button" onClick={logOut}>
 					Log out
 				</button>
 				<br />

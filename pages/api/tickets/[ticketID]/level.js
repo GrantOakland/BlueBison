@@ -1,6 +1,6 @@
 import { dbQuery } from 'lib/db';
 import getUserFromCookies from 'lib/getUserFromCookies';
-import { sqlNumber, sqlString } from 'lib/sql';
+import { sqlNumber } from 'lib/sql';
 
 export default async function handler(req, res) {
 	if (
@@ -18,13 +18,13 @@ export default async function handler(req, res) {
 		const me = await getUserFromCookies(req, res);
 
 		if (!me?.USER_IS_TECHNICIAN) {
-			res.status(403).send('You must be a technician to set a ticket\'s notes.');
+			res.status(403).send('You must be a technician to set a ticket\'s level.');
 			return;
 		}
 
 		await dbQuery(`
 			UPDATE TICKET
-			SET TICKET_NOTES = ${sqlString(req.body)}
+			SET TICKET_LEVEL = ${sqlNumber(req.body)}
 			WHERE TICKET_ID = ${sqlNumber(req.query.ticketID)}
 		`);
 
