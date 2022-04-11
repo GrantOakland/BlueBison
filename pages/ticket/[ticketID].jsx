@@ -10,10 +10,12 @@ import useFunction from 'lib/useFunction';
 import { useUser } from 'lib/UserContext';
 import { useState } from 'react';
 
-const Component = ({ statuses, ticket, ticketStatuses, customer, technician: initialTechnician, comments }) => {
+const Component = ({ statuses, ticket, ticketStatuses: initialTicketStatuses, customer, technician: initialTechnician, comments: initialComments }) => {
 	const [technician, setTechnician] = useState(initialTechnician);
 
 	const me = useUser();
+
+	const [ticketStatuses, setTicketStatuses] = useState(initialTicketStatuses);
 
 	const [status, setStatus] = useState(ticketStatuses[ticketStatuses.length - 1].STATUS_ID);
 
@@ -47,6 +49,8 @@ const Component = ({ statuses, ticket, ticketStatuses, customer, technician: ini
 		}
 	});
 
+	const [comments, setComments] = useState(initialComments);
+
 	return (
 		<>
 			<div>
@@ -79,7 +83,6 @@ const Component = ({ statuses, ticket, ticketStatuses, customer, technician: ini
 						statuses.find(status => status.STATUS_ID === ticketStatuses[ticketStatuses.length - 1].STATUS_ID).STATUS_NAME
 					)}
 				</span>
-				{/* Will need to make this a dropdown */}
 				<br />
 				<h3>Reported By:</h3>
 				<span><UserLink type="customer">{customer}</UserLink></span>
@@ -169,20 +172,37 @@ const Component = ({ statuses, ticket, ticketStatuses, customer, technician: ini
 			</table>
 			<br />
 			<br />
-			<div />
-			<label htmlFor="CommentContent"><b>Enter a New Comment:</b></label>
-			<br />
-			<textarea
-				id="CommentContent"
-				name="CommentContent"
-				rows="10"
-				cols="100"
-				placeholder="Enter details here..."
-			/>
-			<br />
-			<form action="TechView.html">
-				<input type="submit" name="CommentContent" value="Post Comment" required />
-			</form>
+			<Formik
+				initialValues={{
+					content: ''
+				}}
+				onSubmit={
+					useFunction(async values => {
+						const { data: comment } = await api.post(`/tickets/${ticket.TICKET_ID}/comments`, values);
+
+						setComments([
+							...comments,
+							comment
+						]);
+					})
+				}
+			>
+				<Form>
+					<label htmlFor="comment-content"><b>Enter a New Comment:</b></label>
+					<br />
+					<Field
+						as="textarea"
+						id="comment-content"
+						name="content"
+						rows="10"
+						cols="100"
+						placeholder="Enter details here..."
+						required
+					/>
+					<br />
+					<input type="submit" value="Post Comment" />
+				</Form>
+			</Formik>
 			<br />
 			<br />
 			<ButtonLink href="/">Go Back Home</ButtonLink>
