@@ -46,7 +46,7 @@ const Component = () => {
 						) : (
 							<>
 								<td>
-									<ButtonLink href="/new-ticket">New Ticket!</ButtonLink>
+									<ButtonLink href="/ticket/new">New Ticket!</ButtonLink>
 								</td>
 								<td>
 									<ButtonLink href={`/?user=${me.USER_ID}`}>See your ticket history.</ButtonLink>
