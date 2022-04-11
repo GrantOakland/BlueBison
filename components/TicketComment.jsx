@@ -1,9 +1,26 @@
 import UserLink from './UserLink';
 import { formatSQLDatetime } from 'lib/sql';
 import { useState } from 'react';
+import useFunction from 'lib/useFunction';
+import api from 'lib/api';
+import { useUser } from 'lib/UserContext';
 
 const TicketComment = ({ children: comment }) => {
+	const me = useUser();
+
 	const [content, setContent] = useState(comment.COMMENT_CONTENT);
+
+	const editComment = useFunction(async () => {
+		const newContent = prompt('Enter the new comment content:', content);
+
+		if (newContent) {
+			await api.put(`/tickets/${comment.TICKET_ID}/comments/${comment.COMMENT_ID}/content`, newContent);
+
+			setContent(newContent);
+		}
+	});
+
+
 
 	return (
 		<tr>
@@ -20,7 +37,11 @@ const TicketComment = ({ children: comment }) => {
 				<p>
 					{content}
 				</p>
-				<button type="button">Edit</button>
+				{comment.USER_ID === me.USER_ID && (
+					<button type="button" onClick={editComment}>
+						Edit
+					</button>
+				)}
 				<button type="button">Delete</button>
 			</td>
 		</tr>

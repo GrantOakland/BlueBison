@@ -201,7 +201,7 @@ const Component = ({ statuses, ticket, ticketStatuses: initialTicketStatuses, cu
 						name="content"
 						rows="10"
 						cols="100"
-						placeholder="Enter details here..."
+						placeholder="Enter comment here..."
 						required
 					/>
 					<br />
@@ -244,7 +244,7 @@ export const getServerSideProps = async ({ req, query }) => {
 				WHERE TICKET_ID = ${sqlNumber(query.ticketID)}
 			`)),
 			comments: serialize(await dbQuery(`
-				SELECT COMMENT_ID, USER.USER_ID, USER_FNAME, USER_LNAME, USER_IS_TECHNICIAN, COMMENT_DATE, COMMENT_CONTENT
+				SELECT COMMENT_ID, TICKET_ID, USER.USER_ID, USER_FNAME, USER_LNAME, USER_IS_TECHNICIAN, COMMENT_DATE, COMMENT_CONTENT
 				FROM COMMENT
 				INNER JOIN USER
 				ON COMMENT.USER_ID = USER.USER_ID
