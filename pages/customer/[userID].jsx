@@ -7,34 +7,38 @@ import withStatusCode from 'lib/withStatusCode';
 const Component = withErrorPage(({ user }) => (
 	<>
 		<table>
-			<tr>
-				<th>First Name</th>
-				<th>Last Name</th>
-				{user.USER_EMAIL && (
-					<th>Email Address</th>
-				)}
-				{user.CUSTOMER_PHONE && (
-					<th>Phone</th>
-				)}
-				{user.CUSTOMER_TIME_ZONE && (
-					<th>Time Zone</th>
-				)}
-				<th>User ID</th>
-			</tr>
-			<tr>
-				<td>{user.USER_FNAME}</td>
-				<td>{user.USER_LNAME}</td>
-				{user.USER_EMAIL && (
-					<td>{user.USER_EMAIL}</td>
-				)}
-				{user.CUSTOMER_PHONE && (
-					<td>{user.CUSTOMER_PHONE}</td>
-				)}
-				{user.CUSTOMER_TIME_ZONE && (
-					<td>{user.CUSTOMER_TIME_ZONE}</td>
-				)}
-				<td>{user.USER_ID}</td>
-			</tr>
+			<thead>
+				<tr>
+					<th>First Name</th>
+					<th>Last Name</th>
+					{user.USER_EMAIL && (
+						<th>Email Address</th>
+					)}
+					{user.CUSTOMER_PHONE && (
+						<th>Phone</th>
+					)}
+					{user.CUSTOMER_TIME_ZONE && (
+						<th>Time Zone</th>
+					)}
+					<th>User ID</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>{user.USER_FNAME}</td>
+					<td>{user.USER_LNAME}</td>
+					{user.USER_EMAIL && (
+						<td>{user.USER_EMAIL}</td>
+					)}
+					{user.CUSTOMER_PHONE && (
+						<td>{user.CUSTOMER_PHONE}</td>
+					)}
+					{user.CUSTOMER_TIME_ZONE && (
+						<td>{user.CUSTOMER_TIME_ZONE}</td>
+					)}
+					<td>{user.USER_ID}</td>
+				</tr>
+			</tbody>
 		</table>
 		<br />
 		<ButtonLink href={`/?customer=${user.USER_ID}`}>View ticket history</ButtonLink>

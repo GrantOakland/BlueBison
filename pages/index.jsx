@@ -30,22 +30,26 @@ const Component = ({ statuses, tickets }) => {
 			</form>
 
 			<table>
-				<tr>
-					<th>Title</th>
-					<th>Description</th>
-					<th>Status</th>
-				</tr>
-				{tickets.map(({ TICKET_ID, TICKET_TITLE, TICKET_DESCRIPTION, STATUS_ID }) => (
-					<tr key={TICKET_ID}>
-						<td>
-							<Link href={`/ticket/${TICKET_ID}`}>
-								{TICKET_TITLE}
-							</Link>
-						</td>
-						<td>{TICKET_DESCRIPTION}</td>
-						<td>{statuses.find(status => status.STATUS_ID === STATUS_ID).STATUS_NAME}</td>
+				<thead>
+					<tr>
+						<th>Title</th>
+						<th>Description</th>
+						<th>Status</th>
 					</tr>
-				))}
+				</thead>
+				<tbody>
+					{tickets.map(({ TICKET_ID, TICKET_TITLE, TICKET_DESCRIPTION, STATUS_ID }) => (
+						<tr key={TICKET_ID}>
+							<td>
+								<Link href={`/ticket/${TICKET_ID}`}>
+									{TICKET_TITLE}
+								</Link>
+							</td>
+							<td>{TICKET_DESCRIPTION}</td>
+							<td>{statuses.find(status => status.STATUS_ID === STATUS_ID).STATUS_NAME}</td>
+						</tr>
+					))}
+				</tbody>
 			</table>
 		</>
 	);

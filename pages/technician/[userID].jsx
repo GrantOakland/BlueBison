@@ -7,24 +7,28 @@ import withStatusCode from 'lib/withStatusCode';
 const Component = withErrorPage(({ user }) => (
 	<>
 		<table>
-			<tr>
-				<th>First Name</th>
-				<th>Last Name</th>
-				{user.USER_EMAIL && (
-					<th>Email Address</th>
-				)}
-				<th>Technician Level</th>
-				<th>User ID</th>
-			</tr>
-			<tr>
-				<td>{user.USER_FNAME}</td>
-				<td>{user.USER_LNAME}</td>
-				{user.USER_EMAIL && (
-					<td>{user.USER_EMAIL}</td>
-				)}
-				<td>{user.TECHNICIAN_LEVEL}</td>
-				<td>{user.USER_ID}</td>
-			</tr>
+			<thead>
+				<tr>
+					<th>First Name</th>
+					<th>Last Name</th>
+					{user.USER_EMAIL && (
+						<th>Email Address</th>
+					)}
+					<th>Technician Level</th>
+					<th>User ID</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>{user.USER_FNAME}</td>
+					<td>{user.USER_LNAME}</td>
+					{user.USER_EMAIL && (
+						<td>{user.USER_EMAIL}</td>
+					)}
+					<td>{user.TECHNICIAN_LEVEL}</td>
+					<td>{user.USER_ID}</td>
+				</tr>
+			</tbody>
 		</table>
 		<br />
 		<ButtonLink href={`/?technician=${user.USER_ID}`}>View assigned tickets</ButtonLink>

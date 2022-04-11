@@ -1,5 +1,6 @@
 import ButtonLink from 'components/ButtonLink';
 import UserLink from 'components/UserLink';
+import { Field, Form, Formik } from 'formik';
 import api from 'lib/api';
 import { dbQuery } from 'lib/db';
 import serialize from 'lib/serialize';
@@ -10,7 +11,6 @@ import { useState } from 'react';
 
 const Component = ({ statuses, ticket, ticketStatuses, customer, technician }) => {
 	const me = useUser();
-	console.log(me);
 
 	const [status, setStatus] = useState(ticketStatuses[ticketStatuses.length - 1].STATUS_ID);
 
@@ -20,6 +20,11 @@ const Component = ({ statuses, ticket, ticketStatuses, customer, technician }) =
 		api.post(`/tickets/${ticket.TICKET_ID}/statuses`, {
 			statusID: event.target.value
 		});
+	});
+
+	const submitNotes = useFunction(values => {
+		console.log(ticket);
+		api.put(`/tickets/${ticket.TICKET_ID}/notes`, values.notes);
 	});
 
 	return (
@@ -68,19 +73,28 @@ const Component = ({ statuses, ticket, ticketStatuses, customer, technician }) =
 					)}
 				</span>
 
-				<h3>Technician Notes:</h3>
-				<textarea
-					id="NoteContent"
-					name="NoteContent"
-					rows="10"
-					cols="100"
-					placeholder="Enter note details here..."
-					defaultValue={ticket.TICKET_NOTES}
-				/>
-				<br />
-				<form action="TechView.html">
-					<input type="submit" name="NoteContent" value="Save Technician Notes" required />
-				</form>
+				{me.USER_IS_TECHNICIAN === 1 && (
+					<Formik
+						initialValues={{
+							notes: ticket.TICKET_NOTES
+						}}
+						onSubmit={submitNotes}
+					>
+						<Form>
+							<h3><label htmlFor="notes">Technician Notes:</label></h3>
+							<Field
+								as="textarea"
+								id="notes"
+								name="notes"
+								rows="10"
+								cols="100"
+								placeholder="Enter note details here..."
+							/>
+							<br />
+							<input type="submit" value="Save Technician Notes" />
+						</Form>
+					</Formik>
+				)}
 			</div>
 			<br />
 			<br />
@@ -90,14 +104,18 @@ const Component = ({ statuses, ticket, ticketStatuses, customer, technician }) =
 			<br />
 
 			<table>
-				<tr>
-					<th>Ticket History</th>
-				</tr>
-				<tr>
-					<td>
-						{/* Pull notes from database */}
-					</td>
-				</tr>
+				<thead>
+					<tr>
+						<th>Ticket History</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>
+							{/* Pull notes from database */}
+						</td>
+					</tr>
+				</tbody>
 			</table>
 			<br />
 			<br />
@@ -120,13 +138,13 @@ const Component = ({ statuses, ticket, ticketStatuses, customer, technician }) =
 			<ButtonLink href="/">Go Back Home</ButtonLink>
 		</>
 	);
-}
+};
 
 export default Component;
 
-export const getServerSideProps = async ({ query }) => {
+export const getServerSideProps = async ({ req, query }) => {
 	const ticket = serialize((await dbQuery(`
-		SELECT *
+		SELECT TICKET_ID, TICKET_TITLE, TICKET_DESCRIPTION, CUSTOMER_ID, TECHNICIAN_ID${req.user.USER_IS_TECHNICIAN ? ', TICKET_NOTES' : ''}
 		FROM TICKET
 		WHERE TICKET_ID = ${sqlNumber(query.ticketID)}
 	`))[0]);
