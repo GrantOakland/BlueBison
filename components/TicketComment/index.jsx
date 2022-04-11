@@ -31,8 +31,6 @@ const TicketComment = ({ children: comment }) => {
 		}
 	});
 
-	console.log(comment.TICKET_ID, comment);
-
 	return deleted ? null : (
 		<tr>
 			<td>
