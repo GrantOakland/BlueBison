@@ -14,11 +14,13 @@ export default async function handler(req, res) {
 		return;
 	}
 
-	if ((await dbQuery(`
-		SELECT *
-		FROM COMMENT
-		WHERE COMMENT_ID = ${sqlNumber(req.query.commentID)}
-	`)).length === 0) {
+	if (
+		(await dbQuery(`
+			SELECT *
+			FROM COMMENT
+			WHERE COMMENT_ID = ${sqlNumber(req.query.commentID)}
+		`)).length === 0
+	) {
 		res.status(404).send('Comment not found');
 		return;
 	}

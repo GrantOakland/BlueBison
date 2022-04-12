@@ -127,9 +127,9 @@ export const getServerSideProps = async ({ query }) => {
 					) AS B
 					ON A.TICKET_ID = B.TICKET_ID AND A.TICKET_STATUS_DATE = B.TICKET_STATUS_DATE
 				) AS S ON T.TICKET_ID = S.TICKET_ID
-				${whereClauses.length ? `
+				${whereClauses.length === 0 ? '' : `
 					WHERE ${whereClauses.map(clause => `(${clause})`).join(' AND ')}
-				` : ''}
+				`}
 				ORDER BY T.TICKET_DATE ${query.sort === 'oldest' ? 'ASC' : 'DESC'}
 			`)
 		}

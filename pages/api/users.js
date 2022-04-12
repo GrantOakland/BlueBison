@@ -9,11 +9,13 @@ export default async function handler(req, res) {
 
 		const email = req.body.email.toLowerCase();
 
-		if ((await dbQuery(`
-			SELECT *
-			FROM USER
-			WHERE USER_EMAIL = ${sqlString(email)}
-		`)).length) {
+		if (
+			(await dbQuery(`
+				SELECT *
+				FROM USER
+				WHERE USER_EMAIL = ${sqlString(email)}
+			`)).length !== 0
+		) {
 			res.status(422).send('A user with that email already exists.');
 			return;
 		}
