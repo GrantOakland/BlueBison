@@ -26,9 +26,7 @@ const Component = () => {
 				<table style={{ width: '100%' }}>
 					<tr>
 						<th>Your profile</th>
-						{me.USER_IS_TECHNICIAN ? (
-							<th>Your assigned tickets</th>
-						) : (
+						{!me.USER_IS_TECHNICIAN && (
 							<th>Submit a new ticket</th>
 						)}
 					</tr>
@@ -36,11 +34,7 @@ const Component = () => {
 						<td>
 							<ButtonLink href={`/${me.USER_IS_TECHNICIAN ? 'technician' : 'customer'}/${me.USER_ID}`}>Visit your profile.</ButtonLink>
 						</td>
-						{me.USER_IS_TECHNICIAN ? (
-							<td>
-								<ButtonLink href={`/?technician=${me.USER_ID}`}>See your assigned tickets.</ButtonLink>
-							</td>
-						) : (
+						{!me.USER_IS_TECHNICIAN && (
 							<td>
 								<ButtonLink href="/ticket/new">New Ticket!</ButtonLink>
 							</td>
