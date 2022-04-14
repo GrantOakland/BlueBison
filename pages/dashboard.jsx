@@ -29,10 +29,7 @@ const Component = () => {
 						{me.USER_IS_TECHNICIAN ? (
 							<th>Your assigned tickets</th>
 						) : (
-							<>
-								<th>Submit a new ticket</th>
-								<th>Your ticket history</th>
-							</>
+							<th>Submit a new ticket</th>
 						)}
 					</tr>
 					<tr>
@@ -44,14 +41,9 @@ const Component = () => {
 								<ButtonLink href={`/?technician=${me.USER_ID}`}>See your assigned tickets.</ButtonLink>
 							</td>
 						) : (
-							<>
-								<td>
-									<ButtonLink href="/ticket/new">New Ticket!</ButtonLink>
-								</td>
-								<td>
-									<ButtonLink href={`/?user=${me.USER_ID}`}>See your ticket history.</ButtonLink>
-								</td>
-							</>
+							<td>
+								<ButtonLink href="/ticket/new">New Ticket!</ButtonLink>
+							</td>
 						)}
 					</tr>
 				</table>
